@@ -22,32 +22,32 @@ public class GithubRepositoryService {
     }
 
     public List<GithubRepositoryResponse> getRepositoryData(String userName) {
-        List<GithubRepositoryResponse> repositoryData = new ArrayList<>();
         List<RepositoryResponseDto> repositories = getAllUserRepos(userName);
-        List<BranchResponseDto> branches = getBranchesByUserName(userName);
-
-        for (RepositoryResponseDto repo : repositories) {
-            repositoryData.add(new GithubRepositoryResponse(repo.name(), repo.owner().login(), Collections.singletonList(branches.get(branches.size() - 1))));
-        }
-//
-//
-        return repositoryData;
+        return repositories.stream()
+                .map(this::createRepositoryResponse)
+                .toList();
     }
 
-    private List<BranchResponseDto> getBranchesByUserName(String userName) {
-        List<BranchResponseDto> branches = new ArrayList<>();
-        List<RepositoryResponseDto> repositories = getAllUserRepos(userName);
-        for (RepositoryResponseDto repo : repositories) {
-            branches.addAll(gitHubClient.getRepoBranches(repo.owner().login(), repo.name()));
-        }
-        return branches;
+
+    private GithubRepositoryResponse createRepositoryResponse(RepositoryResponseDto repository) {
+        List<BranchResponseDto> branches =
+                gitHubClient.getRepoBranches(
+                        repository.owner().login(),
+                        repository.name()
+                );
+
+        return new GithubRepositoryResponse(
+                repository.name(),
+                repository.owner().login(),
+                branches
+        );
     }
 
     private List<RepositoryResponseDto> getAllUserRepos(String userName) {
-        log.info("Fetching all repos for user:" + userName);
+        log.info("Fetching all repos for user: {}", userName);
         List<RepositoryResponseDto> repos = gitHubClient.getUserRepos(userName);
-        repos.stream().filter(repo -> repo.fork() != true)
+        return repos.stream().filter(repo -> !repo.fork())
                 .toList();
-        return repos;
+
     }
 }
