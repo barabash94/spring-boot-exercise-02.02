@@ -1,12 +1,10 @@
 package com.bara.spring_boot_exercise.controller;
 
-import com.bara.spring_boot_exercise.model.Branch;
-import com.bara.spring_boot_exercise.model.FullResponseData;
-import com.bara.spring_boot_exercise.model.ResponseData;
+import com.bara.spring_boot_exercise.model.GithubRepositoryResponse;
 import com.bara.spring_boot_exercise.service.GithubRepositoryService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -20,15 +18,10 @@ public class GithubRepositoryController {
         this.githubRepositoryService = githubRepositoryService;
     }
 
-    @GetMapping("/repo/{userName}")
-    List<ResponseData>getAllRepos(@PathVariable String userName){
-       return  githubRepositoryService.getAllUserRepos(userName);
 
-    }
-
-    @GetMapping("/branches/{userName}")
-    List<FullResponseData>getBranches(@PathVariable String userName){
-        return  githubRepositoryService.getBranchesByUserName(userName);
+    @GetMapping("/api/{userName}")
+    ResponseEntity<List<GithubRepositoryResponse>>getBranches(@PathVariable String userName){
+        return  ResponseEntity.ok(githubRepositoryService.getRepositoryData(userName));
     }
 
 }

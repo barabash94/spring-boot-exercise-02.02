@@ -1,9 +1,9 @@
 package com.bara.spring_boot_exercise.service;
 
 import com.bara.spring_boot_exercise.GitHubClient;
-import com.bara.spring_boot_exercise.model.Branch;
-import com.bara.spring_boot_exercise.model.FullResponseData;
-import com.bara.spring_boot_exercise.model.ResponseData;
+import com.bara.spring_boot_exercise.model.BranchResponseDto;
+import com.bara.spring_boot_exercise.model.GithubRepositoryResponse;
+import com.bara.spring_boot_exercise.model.RepositoryResponseDto;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
@@ -21,22 +21,31 @@ public class GithubRepositoryService {
         this.gitHubClient = gitHubClient;
     }
 
-    public List<FullResponseData> getBranchesByUserName(String userName) {
-        List<FullResponseData> fullData = new ArrayList<>();
-        List<Branch> branches = new ArrayList<>();
-        List<ResponseData> repositories = getAllUserRepos(userName);
-        for (ResponseData repo : repositories) {
-            branches.addAll(gitHubClient.getFullResponse(repo.owner().login(), repo.name()));
-            fullData.add(new FullResponseData(repo.name(), repo.owner().login(), Collections.singletonList(branches.get(branches.size() - 1))));
+    public List<GithubRepositoryResponse> getRepositoryData(String userName) {
+        List<GithubRepositoryResponse> repositoryData = new ArrayList<>();
+        List<RepositoryResponseDto> repositories = getAllUserRepos(userName);
+        List<BranchResponseDto> branches = getBranchesByUserName(userName);
+
+        for (RepositoryResponseDto repo : repositories) {
+            repositoryData.add(new GithubRepositoryResponse(repo.name(), repo.owner().login(), Collections.singletonList(branches.get(branches.size() - 1))));
         }
-
-
-        return fullData;
+//
+//
+        return repositoryData;
     }
 
-    public List<ResponseData> getAllUserRepos(String userName) {
+    private List<BranchResponseDto> getBranchesByUserName(String userName) {
+        List<BranchResponseDto> branches = new ArrayList<>();
+        List<RepositoryResponseDto> repositories = getAllUserRepos(userName);
+        for (RepositoryResponseDto repo : repositories) {
+            branches.addAll(gitHubClient.getRepoBranches(repo.owner().login(), repo.name()));
+        }
+        return branches;
+    }
+
+    private List<RepositoryResponseDto> getAllUserRepos(String userName) {
         log.info("Fetching all repos for user:" + userName);
-        List<ResponseData> repos = gitHubClient.getUserRepos(userName);
+        List<RepositoryResponseDto> repos = gitHubClient.getUserRepos(userName);
         repos.stream().filter(repo -> repo.fork() != true)
                 .toList();
         return repos;

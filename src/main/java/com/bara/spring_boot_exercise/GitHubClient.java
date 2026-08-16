@@ -1,7 +1,7 @@
 package com.bara.spring_boot_exercise;
 
-import com.bara.spring_boot_exercise.model.Branch;
-import com.bara.spring_boot_exercise.model.ResponseData;
+import com.bara.spring_boot_exercise.model.BranchResponseDto;
+import com.bara.spring_boot_exercise.model.RepositoryResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,9 +16,9 @@ public interface GitHubClient {
 
 
     @GetMapping(value = "/users/{name}/repos", produces = MediaType.APPLICATION_JSON_VALUE)
-    List<ResponseData> getUserRepos(@PathVariable("name") String userName);
+    List<RepositoryResponseDto> getUserRepos(@PathVariable("name") String userName);
 
     @GetMapping(value = "/repos/{userName}/{repoName}/branches", produces = MediaType.APPLICATION_JSON_VALUE)
-    List<Branch> getFullResponse(@PathVariable("userName") String userName, @PathVariable("repoName") String repoName);
+    List<BranchResponseDto> getRepoBranches(@PathVariable("userName") String userName, @PathVariable("repoName") String repoName);
 
 }
