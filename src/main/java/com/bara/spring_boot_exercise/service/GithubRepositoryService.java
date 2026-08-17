@@ -1,6 +1,6 @@
 package com.bara.spring_boot_exercise.service;
 
-import com.bara.spring_boot_exercise.GitHubClient;
+import com.bara.spring_boot_exercise.web.GitHubClient;
 import com.bara.spring_boot_exercise.error.UserNotFoundException;
 import com.bara.spring_boot_exercise.model.BranchResponseDto;
 import com.bara.spring_boot_exercise.model.GithubRepositoryResponse;
@@ -8,6 +8,7 @@ import com.bara.spring_boot_exercise.model.RepositoryResponseDto;
 import feign.FeignException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 
@@ -57,6 +58,5 @@ public class GithubRepositoryService {
             log.error("User not found: {}", userName);
             throw new UserNotFoundException("User not found");
         }
-
     }
 }

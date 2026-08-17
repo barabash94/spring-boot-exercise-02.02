@@ -1,4 +1,4 @@
-package com.bara.spring_boot_exercise;
+package com.bara.spring_boot_exercise.web;
 
 import com.bara.spring_boot_exercise.model.BranchResponseDto;
 import com.bara.spring_boot_exercise.model.RepositoryResponseDto;
