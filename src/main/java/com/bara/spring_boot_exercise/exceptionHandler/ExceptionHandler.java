@@ -2,6 +2,7 @@ package com.bara.spring_boot_exercise.exceptionHandler;
 
 import com.bara.spring_boot_exercise.error.ErrorResponse;
 import com.bara.spring_boot_exercise.error.UserNotFoundException;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,5 +29,12 @@ public class ExceptionHandler {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorResponse(406,"HTML is not supported"));
 
+    }
+    @org.springframework.web.bind.annotation.ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse>handleEmptyUserName(ConstraintViolationException exception){
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(400,"Username cannot be blank"));
     }
 }
