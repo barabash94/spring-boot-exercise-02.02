@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/repos")
 @RequiredArgsConstructor
@@ -37,6 +39,10 @@ public class RepoController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         repoService.delete(id);
+    }
+    @PostMapping("/github/{userName}")
+    public List<Repo> saveFromGithub(@PathVariable String userName) {
+        return repoService.saveRepositoriesFromGithub(userName);
     }
 
 }
