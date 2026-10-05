@@ -23,7 +23,7 @@ public class GithubRepositoryController {
     }
 
 
-    @GetMapping(path = "/api/{userName}",produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/api/{userName}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<List<GithubRepositoryResponse>> getBranches(@PathVariable @NotBlank(message = "Username cannot be blank") String userName) {
         return ResponseEntity.ok(githubRepositoryService.getRepositoryData(userName));
     }

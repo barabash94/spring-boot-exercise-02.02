@@ -1,30 +1,33 @@
 # GitHub Repository API
 
-REST API built with Spring Boot for retrieving GitHub repositories and branch information for a given user.
+REST API built with Spring Boot for retrieving GitHub repositories and branch information, with PostgreSQL persistence.
 
 ![Java](https://img.shields.io/badge/Java-17-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1.0-brightgreen)
-![OpenFeign](https://img.shields.io/badge/Spring%20Cloud-OpenFeign-blue)
+![OpenFeign](https://img.shields.io/badge/OpenFeign-blue)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-blue)
 
 ## Features
 
 * Retrieve repositories for a GitHub user
 * Exclude forked repositories
-* Retrieve repository branches and latest commit SHA
+* Retrieve branches and latest commit SHA
+* Persist repositories in PostgreSQL
+* CRUD operations with pagination
 * Integration with GitHub REST API using OpenFeign
-* Centralized exception handling
-* Request validation
-* JSON error responses
+* Centralized exception handling and request validation
 
 ## Tech Stack
 
-* **Java 17**
-* **Spring Boot 4.1.0**
-* **Spring Web MVC**
-* **Spring Cloud OpenFeign**
-* **Spring Validation**
-* **Gradle**
-* **Lombok**
+* Java 17
+* Spring Boot 4.1.0
+* Spring Web MVC
+* Spring Cloud OpenFeign
+* Spring Data JPA / Hibernate
+* PostgreSQL
+* Docker Compose
+* Gradle
+* Lombok
 
 ## Architecture
 
@@ -40,9 +43,25 @@ OpenFeign Client
 GitHub REST API
 ```
 
+For persistence:
+
+```text
+GitHub API
+   ↓
+GithubRepositoryService
+   ↓
+GithubRepoMapper
+   ↓
+Repo Entity
+   ↓
+RepoRepository
+   ↓
+PostgreSQL
+```
+
 ## API
 
-### Get user repositories
+### Get GitHub repositories
 
 ```http
 GET /api/{userName}
@@ -55,88 +74,61 @@ GET /api/octocat
 Accept: application/json
 ```
 
-Response:
-
-```json
-[
-  {
-    "name": "Hello-World",
-    "owner": "octocat",
-    "branches": [
-      {
-        "name": "main",
-        "commit": {
-          "sha": "abc123..."
-        }
-      }
-    ]
-  }
-]
-```
-
-## Error Handling
-
-The application uses `@RestControllerAdvice` for centralized exception handling.
-
-**User not found**
+### Save GitHub repositories
 
 ```http
-HTTP 404 Not Found
+POST /api/repos/github/{userName}
 ```
 
-```json
-{
-  "status": 404,
-  "message": "User not found"
-}
+### Repository CRUD
+
+```text
+GET    /api/repos
+GET    /api/repos/{id}
+POST   /api/repos
+PUT    /api/repos/{id}
+DELETE /api/repos/{id}
 ```
 
-**HTML not supported**
-
-When the client requests an HTML response:
+Pagination example:
 
 ```http
-Accept: text/html
+GET /api/repos?page=0&size=10
 ```
 
-the API returns:
+## Database
 
-```http
-HTTP 406 Not Acceptable
+The application uses PostgreSQL running in Docker.
+
+Database configuration:
+
+```text
+Host: localhost
+Port: 54321
+Database: postgres
+Username: user
+Password: admin
 ```
 
-```json
-{
-  "status": 406,
-  "message": "HTML is not supported"
-}
-```
-
-## Configuration
-
-`application.properties`:
-
-```properties
-spring.application.name=spring-boot-exercise
-gitHubApi.url=https://api.github.com
-```
+The `repo` table is created using `init.sql`.
 
 ## Running the Application
 
-### Requirements
+Start PostgreSQL:
 
-* Java 17+
-* Git
+```bash
+docker compose up -d
+```
 
-### Run with Gradle
+Run the application:
 
-**Windows:**
+**Windows**
 
 ```bash
 gradlew.bat bootRun
 ```
 
-**Linux/macOS:**
+**Linux/macOS**
 
 ```bash
 ./gradlew bootRun
@@ -148,16 +140,15 @@ The application will be available at:
 http://localhost:8080
 ```
 
-## Project Structure
+## Error Handling
 
-```text
-src/main/java/com/bara/spring_boot_exercise
-├── controller
-├── service
-├── client
-├── model
-└── exception
-```
+The application uses `@RestControllerAdvice` for centralized exception handling.
+
+Examples:
+
+* `404 Not Found` – GitHub user or repository not found
+* `406 Not Acceptable` – HTML responses are not supported
+* `400 Bad Request` – invalid request parameters
 
 ## Author
 
