@@ -1,0 +1,12 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: github-postgres
+    ports:
+      - "54321:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: postgres
+    volumes:
+    - ./init.sql:/docker-entrypoint-initdb.d/init.sql
